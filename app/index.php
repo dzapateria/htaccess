@@ -1,8 +1,2 @@
-
-<?php
-
-echo "<pre>";
-
-print_r($_GET);
-
-echo "</pre>";
+<?php 
+include $_SERVER['DOCUMENT_ROOT']. "/request_info.php";

@@ -1,3 +1,3 @@
-
 <?php
-echo "estas en /api";
+
+include $_SERVER['DOCUMENT_ROOT']. "/request_info.php";
