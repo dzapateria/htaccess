@@ -1,0 +1,53 @@
+#---------| Activate rewrite |---------------------- 
+
+RewriteEngine On
+RewriteBase /
+
+ # -------| MAINTENANCE MODE | -------------------------
+
+ RewriteCond %{DOCUMENT_ROOT}/maintenance/on.txt -f
+ RewriteCond %{REMOTE_ADDR} !^90.75.234.246 [OR]
+ RewriteCond %{REMOTE_ADDR} !^90.75.234.244
+ RewriteCond %{REQUEST_URI} !^(/?)files/.*
+ RewriteCond %{REQUEST_URI} !^(/?)maintenance.*
+ RewriteRule ^(.*)$ https://%{HTTP_HOST}/maintenance/ [R=301,L]
+
+#---------| add / in the end of request not GET request |----------
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_URI} /+[^\.]+$
+RewriteCond %{REQUEST_URI} !&
+RewriteRule ^(.+[^/])$ %{REQUEST_URI}/ [R=301,L]
+
+#---------| REDIRECT WWW TO NON-WWW FOR PRODUCTION URL/DOMAIN |--------
+
+RewriteCond %{HTTP_HOST} !^(.*)(\.test|\.dev|localhost)$ [NC]
+RewriteCond %{HTTP_HOST} ^(.*)(test.|dev.|local.)$ [NC]
+RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
+
+#---------| REDIRECT HTTP => HTTPS ONLY IN .COM DOMAIN |---------------  
+
+RewriteCond %{HTTPS} off
+RewriteCond %{HTTP_HOST} ^(.*)(\.com)$ [NC]
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+ 
+#---------|  FRONT CONTROLLER OPTION 1: Root directory |----------------
+
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_URI} !^(/?)(app|api).*
+RewriteRule ^(.*)$ /?url=$1 [QSA]
+
+#---------|  FRONT CONTROLLER OPTION 2: Folder directories |------------
+
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_URI} ^(/?)app.*
+RewriteRule ^(.*)$ /app/?url=$1 [QSA]
+
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_URI} ^(/?)api.*
+RewriteRule ^(.*)$ /api/?url=$1 [QSA]
+ 
